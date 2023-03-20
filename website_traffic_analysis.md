@@ -4,7 +4,6 @@ date: "2023-03-14"
 output:
   html_document:
     keep_md: true
-  pdf_document:
   extra_dependencies: ['amsmath', 'hyperref']
 monofont: "Roboto Mono"
 header-includes:
@@ -15,11 +14,7 @@ bibliography: bayesianbib.bib
 
 
 
-\urlstyle{tt}
-
 ## Abstract
-
-<!-- <style>pre {width: 600px; border: 0; display: inline; margin: 0; padding: 0; white-space: normal}</style> -->
 
 It has been suggested that dwell times on webpages may be modeled using a Weibull distribution, and that Web browsing exhibits a significant "negative ageing" phenomenon, that is, the rate of Webpage abandonment decreases over time [@Liu10]. The goal of this project is to assess the suitability of the normal and Weibull distributions for modeling the average session duration of visitors to a specific website `(http://www.polygraphis.com)`, and to determine whether average session durations for this website have a negative ageing effect. Furthermore, we classify visitors by the region they come from and use a hierarchical Weibull model to study the average session duration of visitors from each region. We then fit the model using JAGS and R and perform convergence diagnostics as well as residual analysis, and assess predictive performance of the model. These results are then compared to those obtained by fitting a normal distribution to the data. 
 
@@ -100,7 +95,7 @@ The mean as well as the standard deviation of the residuals for the 5 continents
 
 
 ```
-## Mean residuals: 6.968559 3.203226 -2.686607 19.38497 -21.31251
+## Mean residuals: 7.408088 3.143734 -2.709144 19.73206 -21.34391
 ```
 
 ```
@@ -117,13 +112,13 @@ We also used the posterior samples to get Monte Carlo estimates of the mean aver
 
 ```
 ##           0%           5%          10%          15%          20%          25% 
-## 1.936160e+00 5.110010e+01 6.671620e+01 7.812275e+01 8.794898e+01 9.759376e+01 
+## 4.925311e+00 5.226436e+01 6.729470e+01 7.889940e+01 8.867935e+01 9.797797e+01 
 ##          30%          35%          40%          45%          50%          55% 
-## 1.069973e+02 1.163594e+02 1.255360e+02 1.355689e+02 1.466733e+02 1.586251e+02 
+## 1.072029e+02 1.164754e+02 1.259678e+02 1.358672e+02 1.460714e+02 1.576500e+02 
 ##          60%          65%          70%          75%          80%          85% 
-## 1.725716e+02 1.884885e+02 2.087711e+02 2.328303e+02 2.668738e+02 3.177312e+02 
+## 1.708787e+02 1.861141e+02 2.047261e+02 2.292162e+02 2.629486e+02 3.134105e+02 
 ##          90%          95%         100% 
-## 4.110857e+02 6.616254e+02 5.381240e+12
+## 4.017439e+02 6.420759e+02 1.101838e+10
 ```
 
 ![](website_traffic_analysis_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
@@ -160,7 +155,7 @@ As was the case for the Weibull model, convergence was observed after 1e4 iterat
 
 
 ```
-## Mean residuals: 3.178891 0.4537799 0.2232925 4.830155 0.8981627
+## Mean residuals: 3.107182 0.5004386 0.2314226 4.925634 0.8873818
 ```
 
 ```
@@ -172,13 +167,13 @@ The posterior samples were again drawn to get Monte Carlo estimates of the mean 
 
 ```
 ##           0%           5%          10%          15%          20%          25% 
-## 1.820272e-73 4.634810e-12 1.829416e-08 1.896221e-06 6.093720e-05 7.103372e-04 
+## 2.461246e-70 3.950732e-12 1.875661e-08 2.382546e-06 6.067019e-05 6.312026e-04 
 ##          30%          35%          40%          45%          50%          55% 
-## 5.000559e-03 2.582620e-02 1.082508e-01 3.585969e-01 1.027618e+00 2.595177e+00 
+## 4.814906e-03 2.358775e-02 9.837904e-02 3.422679e-01 1.021179e+00 2.651651e+00 
 ##          60%          65%          70%          75%          80%          85% 
-## 6.077616e+00 1.311816e+01 2.682163e+01 5.131927e+01 9.743540e+01 1.845555e+02 
+## 6.124312e+00 1.322977e+01 2.629759e+01 5.067304e+01 9.773452e+01 1.870319e+02 
 ##          90%          95%         100% 
-## 3.590833e+02 7.751596e+02 8.471048e+03
+## 3.584605e+02 7.673775e+02 8.125360e+03
 ```
 
 ![](website_traffic_analysis_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
@@ -198,36 +193,36 @@ The following is the summary of the posterior distribution for the Weibull model
 ##    plus standard error of the mean:
 ## 
 ##             Mean        SD  Naive SE Time-series SE
-## lam[1]   0.01225  0.002107 1.216e-05      4.221e-05
-## lam[2]   0.03145  0.003259 1.882e-05      9.049e-05
-## lam[3]   0.02491  0.002498 1.442e-05      7.267e-05
-## lam[4]   0.01279  0.001873 1.081e-05      4.713e-05
-## lam[5]   0.02451  0.006236 3.600e-05      7.761e-05
-## mu[1]  270.81326 45.156914 2.607e-01      2.746e-01
-## mu[2]   82.31808  5.142321 2.969e-02      2.995e-02
-## mu[3]  109.76197  5.838832 3.371e-02      3.371e-02
-## mu[4]  253.45985 29.266929 1.690e-01      1.728e-01
-## mu[5]  121.02680 37.880893 2.187e-01      2.464e-01
-## mu0      0.02225  0.006835 3.946e-05      1.668e-04
-## sig0     0.01150  0.008509 4.913e-05      2.415e-04
-## v        0.80760  0.018075 1.044e-04      5.536e-04
+## lam[1]   0.01233  0.002106 1.216e-05      4.207e-05
+## lam[2]   0.03156  0.003229 1.864e-05      8.646e-05
+## lam[3]   0.02501  0.002474 1.428e-05      6.940e-05
+## lam[4]   0.01287  0.001847 1.067e-05      4.383e-05
+## lam[5]   0.02461  0.006270 3.620e-05      7.416e-05
+## mu[1]  270.37373 45.117337 2.605e-01      2.779e-01
+## mu[2]   82.37757  5.147051 2.972e-02      3.039e-02
+## mu[3]  109.78451  5.873736 3.391e-02      3.288e-02
+## mu[4]  253.11277 29.080277 1.679e-01      1.713e-01
+## mu[5]  121.05819 37.942140 2.191e-01      2.463e-01
+## mu0      0.02211  0.006024 3.478e-05      1.178e-04
+## sig0     0.01105  0.006269 3.619e-05      1.343e-04
+## v        0.80675  0.017811 1.028e-04      5.305e-04
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##             2.5%       25%       50%       75%     97.5%
-## lam[1] 8.583e-03 1.077e-02 1.209e-02   0.01356   0.01681
-## lam[2] 2.555e-02 2.916e-02 3.128e-02   0.03357   0.03828
-## lam[3] 2.035e-02 2.317e-02 2.477e-02   0.02655   0.03011
-## lam[4] 9.513e-03 1.147e-02 1.267e-02   0.01398   0.01678
-## lam[5] 1.408e-02 2.009e-02 2.387e-02   0.02829   0.03848
-## mu[1]  1.959e+02 2.390e+02 2.660e+02 297.51580 372.27709
-## mu[2]  7.276e+01 7.879e+01 8.214e+01  85.64489  92.85728
-## mu[3]  9.893e+01 1.057e+02 1.096e+02 113.59632 121.68102
-## mu[4]  2.024e+02 2.328e+02 2.514e+02 271.67450 317.29917
-## mu[5]  6.584e+01 9.446e+01 1.148e+02 141.01399 213.95250
-## mu0    1.280e-02 1.814e-02 2.122e-02   0.02491   0.03758
-## sig0   4.750e-03 7.314e-03 9.511e-03   0.01298   0.02974
-## v      7.719e-01 7.951e-01 8.078e-01   0.81973   0.84285
+## lam[1] 8.627e-03 1.087e-02   0.01216   0.01365   0.01685
+## lam[2] 2.565e-02 2.928e-02   0.03142   0.03369   0.03831
+## lam[3] 2.045e-02 2.327e-02   0.02494   0.02666   0.03008
+## lam[4] 9.619e-03 1.156e-02   0.01276   0.01404   0.01677
+## lam[5] 1.418e-02 2.018e-02   0.02396   0.02841   0.03866
+## mu[1]  1.948e+02 2.386e+02 266.03557 296.85702 370.52671
+## mu[2]  7.289e+01 7.885e+01  82.18561  85.75120  92.96505
+## mu[3]  9.893e+01 1.057e+02 109.56840 113.63023 121.72710
+## mu[4]  2.020e+02 2.326e+02 250.95725 271.22002 315.82131
+## mu[5]  6.563e+01 9.426e+01 114.83037 140.78799 211.55330
+## mu0    1.306e-02 1.825e-02   0.02129   0.02490   0.03662
+## sig0   4.762e-03 7.258e-03   0.00943   0.01278   0.02739
+## v      7.725e-01 7.944e-01   0.80659   0.81893   0.84200
 ```
 
 Here is the summary of the posterior distribution for the normal model.
@@ -244,34 +239,34 @@ Here is the summary of the posterior distribution for the normal model.
 ##    plus standard error of the mean:
 ## 
 ##          Mean     SD Naive SE Time-series SE
-## mu[1]  274.60 26.693  0.15411        0.19305
-## mu[2]   85.07  6.457  0.03728        0.04765
-## mu[3]  106.85  5.052  0.02917        0.03716
-## mu[4]  268.01 34.462  0.19897        0.25104
-## mu[5]   98.82  9.146  0.05281        0.06942
-## mu0    132.10 11.444  0.06607        0.08427
-## sig[1] 195.27 11.286  0.06516        0.06516
-## sig[2] 129.00  4.118  0.02377        0.02377
-## sig[3] 117.50  3.275  0.01891        0.01891
-## sig[4] 368.32 18.081  0.10439        0.10439
-## sig[5]  33.90  2.272  0.01312        0.01340
-## sig0   420.49 63.531  0.36680        0.47844
+## mu[1]  274.67 26.659  0.15391        0.19474
+## mu[2]   85.02  6.524  0.03766        0.04803
+## mu[3]  106.84  5.020  0.02898        0.03629
+## mu[4]  267.92 34.250  0.19774        0.24176
+## mu[5]   98.83  9.007  0.05200        0.06496
+## mu0    132.03 11.315  0.06533        0.08324
+## sig[1] 195.17 11.129  0.06425        0.06479
+## sig[2] 128.97  4.098  0.02366        0.02366
+## sig[3] 117.49  3.287  0.01898        0.01898
+## sig[4] 368.09 17.825  0.10291        0.10291
+## sig[5]  33.88  2.266  0.01308        0.01324
+## sig0   420.41 63.298  0.36545        0.48126
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##          2.5%    25%    50%    75%  97.5%
-## mu[1]  222.09 256.52 274.79 292.65 327.02
-## mu[2]   72.37  80.76  85.11  89.41  97.62
-## mu[3]   96.94 103.48 106.84 110.24 116.73
-## mu[4]  200.58 244.96 267.70 291.26 335.32
-## mu[5]   80.72  92.71  98.83 105.00 116.62
-## mu0    110.29 124.34 131.76 139.69 155.32
-## sig[1] 174.55 187.42 194.81 202.50 218.95
-## sig[2] 121.24 126.18 128.92 131.68 137.37
-## sig[3] 111.31 115.25 117.42 119.68 124.12
-## sig[4] 334.91 355.77 367.62 380.08 405.67
-## sig[5]  29.85  32.29  33.78  35.36  38.69
-## sig0   305.75 376.09 416.93 461.39 554.64
+## mu[1]  221.93 256.71 274.69 292.67 326.76
+## mu[2]   72.20  80.66  85.00  89.44  97.89
+## mu[3]   96.86 103.47 106.80 110.22 116.73
+## mu[4]  200.77 244.92 267.85 291.00 334.76
+## mu[5]   81.09  92.77  98.89 104.79 116.60
+## mu0    110.79 124.23 131.70 139.58 155.04
+## sig[1] 174.85 187.37 194.59 202.40 218.30
+## sig[2] 121.20 126.19 128.84 131.65 137.36
+## sig[3] 111.26 115.22 117.42 119.66 124.18
+## sig[4] 335.08 355.74 367.31 379.57 405.03
+## sig[5]  29.81  32.30  33.73  35.32  38.71
+## sig0   305.41 376.11 417.27 460.90 553.64
 ```
 
 The mean values of the posterior average session durations for each of the 5 continents in the Weibull model appeared to be fairly similar to the corresponding values in the normal model. However, while the residual errors for the normal model were smaller than those for the Weibull model, the DIC value of 12484 for the Weibull model  was smaller than the DIC value of 14821 for the normal model, suggesting that the Weibull model may be preferable to the normal model. 
