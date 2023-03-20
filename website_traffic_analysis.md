@@ -9,8 +9,6 @@ monofont: "Roboto Mono"
 header-includes:
   - \usepackage{fontspec}
   - \newfontfamily\urlfont{Roboto Mono}
-bibliography: bayesianbib.bib
-link_citations: true
 
 ---
 
@@ -18,7 +16,8 @@ link_citations: true
 
 ## Abstract
 
-It has been suggested that dwell times on webpages may be modeled using a Weibull distribution, and that Web browsing exhibits a significant "negative ageing" phenomenon, that is, the rate of Webpage abandonment decreases over time [@Liu10]. The goal of this project is to assess the suitability of the normal and Weibull distributions for modeling the average session duration of visitors to a specific website `(http://www.polygraphis.com)`, and to determine whether average session durations for this website have a negative ageing effect. Furthermore, we classify visitors by the region they come from and use a hierarchical Weibull model to study the average session duration of visitors from each region. We then fit the model using JAGS and R and perform convergence diagnostics as well as residual analysis, and assess predictive performance of the model. These results are then compared to those obtained by fitting a normal distribution to the data. 
+It has been suggested that dwell times on webpages may be modeled using a Weibull distribution, and that Web browsing exhibits a significant "negative ageing" phenomenon, that is, the rate of Webpage abandonment decreases over time  <span class="citation">(Liu, White, and
+Dumais 2010)</span>. The goal of this project is to assess the suitability of the normal and Weibull distributions for modeling the average session duration of visitors to a specific website `(http://www.polygraphis.com)`, and to determine whether average session durations for this website have a negative ageing effect. Furthermore, we classify visitors by the region they come from and use a hierarchical Weibull model to study the average session duration of visitors from each region. We then fit the model using JAGS and R and perform convergence diagnostics as well as residual analysis, and assess predictive performance of the model. These results are then compared to those obtained by fitting a normal distribution to the data. 
 
 <p>Our results are as follows. First, it is observed that in both the Weibull and normal models, MCMC convergence of the monitored parameters is achieved after 5000 iterations, and that the corresponding autocorrelation values decrease sharply to 0. Second, the Deviance Information Criterion (DIC) value for the Weibull model turns out to be smaller than that for the normal model. Third, the residual plots for both models do not appear to follow any pattern, but the mean observational level residuals for the normal model are generally lower than those in the Weibull model. That is to say, it appears that the normal model is a better fit to the data than the Weibull model. Fourth, we confirm that the posterior Weibull distribution for each region is indeed negatively ageing, that is, the hazard function for the pdf in each case is decreasing.</p>
 
@@ -41,7 +40,9 @@ The data were collected from the company's Google Analytics account. The head of
 ## 5      Asia 20220428    42              00:01:29
 ## 6      Asia 20210420    41              00:01:36
 ```
-The dataset only included organic search traffic. A *session* is defined to be a period of time during which a user interacts with the website; it is initiated when a user that is currently not in any active session views a page,and it ends after 30 minutes of user inactivity, when the user enters the last page without an engagement hit, or at the moment of the last engagement hit on the last page. The *average session duration* for a given date and continent is calculated by dividing the total duration of all sessions on that date of users from the given continent by the corresponding number of sessions [@Google_analytics_avg_session_duration]. The average session durations in the dataset were converted into seconds, and only rows with a well-defined continent (one of the 5 continents - Africa, Americas, Asia, Europe or Oceania) and an average session duration of at least two seconds were kept. Each continent was converted into a number which denoted its position in the lexicographical ordering of all 5 continents (so Africa was mapped to 1, Americas to 2, Asia to 3, Europe to 4 and Oceania to 5). The cleaned dataset had 1128 rows and 2 columns, one for the continent and the other for the average session duration (in seconds). As a side note, we remark that the dwell times considered by [@Liu10] are calculated for single webpages and not for whole sessions.  
+The dataset only included organic search traffic. A *session* is defined to be a period of time during which a user interacts with the website; it is initiated when a user that is currently not in any active session views a page,and it ends after 30 minutes of user inactivity, when the user enters the last page without an engagement hit, or at the moment of the last engagement hit on the last page. The *average session duration* for a given date and continent is calculated by dividing the total duration of all sessions on that date of users from the given continent by the corresponding number of sessions <span class="citation">(<span>“Session Duration, Avg - Analytics Help”</span>
+2023)</span>. The average session durations in the dataset were converted into seconds, and only rows with a well-defined continent (one of the 5 continents - Africa, Americas, Asia, Europe or Oceania) and an average session duration of at least two seconds were kept. Each continent was converted into a number which denoted its position in the lexicographical ordering of all 5 continents (so Africa was mapped to 1, Americas to 2, Asia to 3, Europe to 4 and Oceania to 5). The cleaned dataset had 1128 rows and 2 columns, one for the continent and the other for the average session duration (in seconds). As a side note, we remark that the dwell times considered by <span class="citation">(Liu, White,
+and Dumais 2010)</span> are calculated for single webpages and not for whole sessions.  
 
 
 ```
@@ -80,7 +81,7 @@ sig0 ~ dgamma(.1,10.0)
 
 } "
 ```
-We postulated that the daily average session duration for visitors from each continent $i$ follows a Weibull distribution with shape parameter $v \sim N(3.0,1.0)$ and scale parameter $\lambda_i \sim \Gamma(\alpha,\beta)$, where the mean $\mu_0 = \frac{\alpha}{\beta}$ and standard deviation $\sigma_0 = \frac{\sqrt{\alpha}}{\beta}$ both follow a gamma distribution, in particular $\frac{\alpha}{\beta} \sim \Gamma(0.1,10.0)$ and $\frac{\sqrt{\alpha}}{\beta} \sim \Gamma(3.0,2.5)$. The parameters $a,b,a',b'$ for the distributions $\Gamma(a,b)$ and $\Gamma(a',b')$ of $\mu_0$ and $\sigma_0$ respectively were chosen after simulating draws from prior distributions for different values of $a,b,a',b'$ between $0$ and $10$. The mean $\mu_i$ of the Weibull distribution with shape parameter $v$ and scale parameter $\lambda_i$ was calculated using the formula $\mu_i = \Gamma(1+\frac{1}{v})\cdot \lambda_i^{-\frac{1}{v}}$; here $\Gamma$ denotes the gamma function. Further, we note that when the shape parameter $v$ is known, the conjugate prior of the likelihood function of $\lambda_i$ conditioned on a set of data points is a gamma distribution [@Fink97]; thus the gamma distribution was chosen as the prior distribution for the scale parameter. Another reason for choosing the gamma distribution is to ensure that the values of the scale parameter are always positive; otherwise, the Weibull pdf for the average session duration might be undefined. Based on the mean estimates of the model parameters $\lambda_i$ and $v$ for each continent $i$, the first question of this project could be addressed by calculating the mean residuals for each continent $i$. The second question could be addressed by determining, for each continent $i$, whether or not the hazard function $h(t) = v\lambda_it^{v-1}$ is decreasing; if so, then this would confirm the negative ageing effect of average session durations, and otherwise it would suggest that positive ageing is observed instead.
+We postulated that the daily average session duration for visitors from each continent $i$ follows a Weibull distribution with shape parameter $v \sim N(3.0,1.0)$ and scale parameter $\lambda_i \sim \Gamma(\alpha,\beta)$, where the mean $\mu_0 = \frac{\alpha}{\beta}$ and standard deviation $\sigma_0 = \frac{\sqrt{\alpha}}{\beta}$ both follow a gamma distribution, in particular $\frac{\alpha}{\beta} \sim \Gamma(0.1,10.0)$ and $\frac{\sqrt{\alpha}}{\beta} \sim \Gamma(3.0,2.5)$. The parameters $a,b,a',b'$ for the distributions $\Gamma(a,b)$ and $\Gamma(a',b')$ of $\mu_0$ and $\sigma_0$ respectively were chosen after simulating draws from prior distributions for different values of $a,b,a',b'$ between $0$ and $10$. The mean $\mu_i$ of the Weibull distribution with shape parameter $v$ and scale parameter $\lambda_i$ was calculated using the formula $\mu_i = \Gamma(1+\frac{1}{v})\cdot \lambda_i^{-\frac{1}{v}}$; here $\Gamma$ denotes the gamma function. Further, we note that when the shape parameter $v$ is known, the conjugate prior of the likelihood function of $\lambda_i$ conditioned on a set of data points is a gamma distribution <span class="citation">(Fink 1997)</span>; thus the gamma distribution was chosen as the prior distribution for the scale parameter. Another reason for choosing the gamma distribution is to ensure that the values of the scale parameter are always positive; otherwise, the Weibull pdf for the average session duration might be undefined. Based on the mean estimates of the model parameters $\lambda_i$ and $v$ for each continent $i$, the first question of this project could be addressed by calculating the mean residuals for each continent $i$. The second question could be addressed by determining, for each continent $i$, whether or not the hazard function $h(t) = v\lambda_it^{v-1}$ is decreasing; if so, then this would confirm the negative ageing effect of average session durations, and otherwise it would suggest that positive ageing is observed instead.
 
 Having specified the model, we set a seed of 113 and fitted the model using JAGS and R. The monitored parameters were $v$, $\mu$, $\lambda$, $\mu_0$ and $\sigma_0$ ($\mu$ and $\lambda$ are vectors of length 5, where each coordinate corresponds to a continent). The algorithm was run for three chains with a burn-in period of 1000 iterations, and each chain was run for 1e4 iterations. It was observed that convergence for each parameter was achieved after 1e4 iterations. The Gelman-Rubin diagnostic potential reduction factor for every parameter except $\mu_0$ and $\sigma_0$ also converged to $1$; the shrink factor for $\mu_0$ reduced to between 1.03 and 1.09 while that for $\sigma_0$ reduced to between 1.07 and 1.15. The trace, density and autocorrelation plots for $\lambda_1$ and $v$ (for all three chains) are shown below.   
 
@@ -97,7 +98,7 @@ The mean as well as the standard deviation of the residuals for the 5 continents
 
 
 ```
-## Mean residuals: 6.7456 3.210117 -2.748751 19.64922 -21.32905
+## Mean residuals: 7.467804 3.181763 -2.721199 19.94946 -21.85398
 ```
 
 ```
@@ -114,13 +115,13 @@ We also used the posterior samples to get Monte Carlo estimates of the mean aver
 
 ```
 ##           0%           5%          10%          15%          20%          25% 
-## 2.024426e+00 5.035039e+01 6.479379e+01 7.679248e+01 8.722426e+01 9.669675e+01 
+## 6.242690e+00 5.239727e+01 6.718373e+01 7.845648e+01 8.869759e+01 9.768827e+01 
 ##          30%          35%          40%          45%          50%          55% 
-## 1.060290e+02 1.154505e+02 1.248197e+02 1.354065e+02 1.461793e+02 1.579984e+02 
+## 1.066248e+02 1.155238e+02 1.253259e+02 1.355593e+02 1.463618e+02 1.583304e+02 
 ##          60%          65%          70%          75%          80%          85% 
-## 1.716290e+02 1.875620e+02 2.064360e+02 2.320105e+02 2.648734e+02 3.167635e+02 
+## 1.718985e+02 1.870092e+02 2.060955e+02 2.306229e+02 2.629258e+02 3.155197e+02 
 ##          90%          95%         100% 
-## 4.063484e+02 6.638312e+02 1.771012e+14
+## 4.022679e+02 6.365144e+02 2.131296e+12
 ```
 
 ![](website_traffic_analysis_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
@@ -157,7 +158,7 @@ As was the case for the Weibull model, convergence was observed after 1e4 iterat
 
 
 ```
-## Mean residuals: 2.710376 0.5501907 0.2144954 5.041632 0.7909642
+## Mean residuals: 2.946251 0.4040345 0.2485661 4.9728 0.8093516
 ```
 
 ```
@@ -169,13 +170,13 @@ The posterior samples were again drawn to get Monte Carlo estimates of the mean 
 
 ```
 ##           0%           5%          10%          15%          20%          25% 
-## 1.295984e-63 4.340635e-12 1.969322e-08 2.154042e-06 5.126770e-05 6.465336e-04 
+## 1.828143e-70 4.866383e-12 2.040535e-08 2.301781e-06 5.515396e-05 6.632220e-04 
 ##          30%          35%          40%          45%          50%          55% 
-## 4.697776e-03 2.423898e-02 9.779947e-02 3.353844e-01 9.990864e-01 2.555149e+00 
+## 4.539599e-03 2.255585e-02 9.699869e-02 3.358002e-01 9.841881e-01 2.485767e+00 
 ##          60%          65%          70%          75%          80%          85% 
-## 6.014731e+00 1.315230e+01 2.631249e+01 5.220144e+01 9.817213e+01 1.850762e+02 
+## 6.061471e+00 1.298058e+01 2.735631e+01 5.267512e+01 9.774428e+01 1.839733e+02 
 ##          90%          95%         100% 
-## 3.592999e+02 7.677039e+02 7.630786e+03
+## 3.622398e+02 7.802947e+02 1.159405e+04
 ```
 
 ![](website_traffic_analysis_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
@@ -195,36 +196,36 @@ The following is the summary of the posterior distribution for the Weibull model
 ##    plus standard error of the mean:
 ## 
 ##             Mean        SD  Naive SE Time-series SE
-## lam[1]   0.01228  0.002079 1.201e-05      4.142e-05
-## lam[2]   0.03154  0.003208 1.852e-05      8.851e-05
-## lam[3]   0.02497  0.002446 1.412e-05      6.877e-05
-## lam[4]   0.01285  0.001845 1.065e-05      4.379e-05
-## lam[5]   0.02460  0.006289 3.631e-05      7.923e-05
-## mu[1]  271.03622 45.246642 2.612e-01      2.767e-01
-## mu[2]   82.31119  5.163291 2.981e-02      3.031e-02
-## mu[3]  109.82412  5.898666 3.406e-02      3.378e-02
-## mu[4]  253.19560 29.311352 1.692e-01      1.738e-01
-## mu[5]  121.04334 38.219823 2.207e-01      2.454e-01
-## mu0      0.02256  0.007414 4.280e-05      2.579e-04
-## sig0     0.01179  0.008570 4.948e-05      3.169e-04
-## v        0.80700  0.017671 1.020e-04      5.336e-04
+## lam[1]   0.01231  0.002096 1.210e-05      4.239e-05
+## lam[2]   0.03154  0.003236 1.869e-05      8.718e-05
+## lam[3]   0.02499  0.002472 1.427e-05      6.945e-05
+## lam[4]   0.01286  0.001865 1.077e-05      4.379e-05
+## lam[5]   0.02453  0.006299 3.637e-05      8.383e-05
+## mu[1]  270.31401 44.966522 2.596e-01      2.766e-01
+## mu[2]   82.33954  5.134520 2.964e-02      3.096e-02
+## mu[3]  109.79657  5.850402 3.378e-02      3.378e-02
+## mu[4]  252.89537 29.036212 1.676e-01      1.711e-01
+## mu[5]  121.56826 38.480483 2.222e-01      2.466e-01
+## mu0      0.02212  0.006057 3.497e-05      1.201e-04
+## sig0     0.01113  0.006380 3.683e-05      1.324e-04
+## v        0.80696  0.017862 1.031e-04      5.330e-04
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##             2.5%       25%       50%       75%     97.5%
-## lam[1] 8.649e-03 1.081e-02 1.212e-02   0.01359   0.01674
-## lam[2] 2.569e-02 2.931e-02 3.140e-02   0.03359   0.03825
-## lam[3] 2.044e-02 2.327e-02 2.487e-02   0.02656   0.03008
-## lam[4] 9.535e-03 1.155e-02 1.273e-02   0.01402   0.01676
-## lam[5] 1.417e-02 2.016e-02 2.397e-02   0.02834   0.03854
-## mu[1]  1.969e+02 2.389e+02 2.661e+02 297.54176 373.14525
-## mu[2]  7.283e+01 7.873e+01 8.212e+01  85.67507  92.95117
-## mu[3]  9.882e+01 1.058e+02 1.096e+02 113.65826 121.82041
-## mu[4]  2.017e+02 2.326e+02 2.509e+02 271.45022 316.73872
-## mu[5]  6.586e+01 9.426e+01 1.146e+02 140.68540 212.90638
-## mu0    1.297e-02 1.828e-02 2.142e-02   0.02523   0.03869
-## sig0   4.823e-03 7.372e-03 9.664e-03   0.01337   0.03114
-## v      7.725e-01 7.950e-01 8.070e-01   0.81875   0.84231
+## lam[1] 8.662e-03 1.084e-02 1.216e-02   0.01362   0.01679
+## lam[2] 2.562e-02 2.929e-02 3.140e-02   0.03363   0.03831
+## lam[3] 2.049e-02 2.326e-02 2.487e-02   0.02660   0.03011
+## lam[4] 9.577e-03 1.155e-02 1.275e-02   0.01405   0.01686
+## lam[5] 1.398e-02 2.007e-02 2.392e-02   0.02831   0.03864
+## mu[1]  1.961e+02 2.388e+02 2.655e+02 296.64436 371.55314
+## mu[2]  7.287e+01 7.878e+01 8.210e+01  85.65763  93.01298
+## mu[3]  9.895e+01 1.058e+02 1.096e+02 113.61980 121.92446
+## mu[4]  2.020e+02 2.326e+02 2.508e+02 270.89402 315.71444
+## mu[5]  6.621e+01 9.460e+01 1.151e+02 141.15613 214.85098
+## mu0    1.296e-02 1.816e-02 2.124e-02   0.02502   0.03660
+## sig0   4.750e-03 7.254e-03 9.424e-03   0.01290   0.02794
+## v      7.723e-01 7.948e-01 8.070e-01   0.81889   0.84180
 ```
 
 Here is the summary of the posterior distribution for the normal model.
@@ -241,34 +242,34 @@ Here is the summary of the posterior distribution for the normal model.
 ##    plus standard error of the mean:
 ## 
 ##          Mean     SD Naive SE Time-series SE
-## mu[1]  275.07 26.568  0.15339        0.19527
-## mu[2]   84.97  6.543  0.03778        0.04835
-## mu[3]  106.86  5.007  0.02891        0.03673
-## mu[4]  267.80 34.547  0.19946        0.24982
-## mu[5]   98.92  9.088  0.05247        0.06604
-## mu0    132.11 11.446  0.06608        0.08474
-## sig[1] 195.22 11.238  0.06488        0.06577
-## sig[2] 128.91  4.080  0.02355        0.02355
-## sig[3] 117.48  3.265  0.01885        0.01859
-## sig[4] 368.21 17.890  0.10329        0.09914
-## sig[5]  33.89  2.277  0.01315        0.01335
-## sig0   421.82 63.597  0.36718        0.47980
+## mu[1]  274.84 26.319  0.15195        0.18776
+## mu[2]   85.12  6.557  0.03786        0.04864
+## mu[3]  106.83  5.067  0.02926        0.03677
+## mu[4]  267.87 34.372  0.19845        0.25412
+## mu[5]   98.90  9.078  0.05241        0.06682
+## mu0    132.16 11.403  0.06583        0.08518
+## sig[1] 195.17 11.215  0.06475        0.06559
+## sig[2] 128.94  4.058  0.02343        0.02343
+## sig[3] 117.48  3.276  0.01892        0.01892
+## sig[4] 368.16 17.727  0.10235        0.10235
+## sig[5]  33.90  2.274  0.01313        0.01332
+## sig0   420.71 63.233  0.36508        0.48108
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##          2.5%    25%    50%    75%  97.5%
-## mu[1]  222.13 257.27 275.08 293.11 326.81
-## mu[2]   72.17  80.56  85.00  89.35  97.85
-## mu[3]   96.90 103.53 106.86 110.25 116.51
-## mu[4]  199.66 244.43 267.94 291.39 334.82
-## mu[5]   81.15  92.83  98.86 105.03 116.90
-## mu0    110.67 124.19 131.69 139.73 155.39
-## sig[1] 174.85 187.37 194.71 202.50 218.94
-## sig[2] 121.27 126.11 128.82 131.60 137.21
-## sig[3] 111.32 115.23 117.41 119.65 124.08
-## sig[4] 335.52 355.78 367.39 379.82 405.83
-## sig[5]  29.78  32.28  33.76  35.32  38.69
-## sig0   307.08 377.04 418.69 462.67 555.65
+## mu[1]  223.18 257.26 275.00 292.38 326.10
+## mu[2]   72.23  80.66  85.11  89.60  97.95
+## mu[3]   96.91 103.41 106.81 110.23 116.79
+## mu[4]  201.17 244.75 268.09 291.25 335.01
+## mu[5]   81.24  92.86  98.90 104.91 116.86
+## mu0    110.77 124.24 131.86 139.70 155.48
+## sig[1] 174.57 187.37 194.66 202.36 218.98
+## sig[2] 121.26 126.14 128.84 131.62 137.15
+## sig[3] 111.32 115.24 117.41 119.63 124.24
+## sig[4] 335.59 355.97 367.49 379.53 405.25
+## sig[5]  29.83  32.31  33.78  35.34  38.71
+## sig0   306.43 376.68 417.45 461.05 554.69
 ```
 
 The mean values of the posterior average session durations for each of the 5 continents in the Weibull model appeared to be fairly similar to the corresponding values in the normal model. However, while the residual errors for the normal model were smaller than those for the Weibull model, the DIC value of 12484 for the Weibull model  was smaller than the DIC value of 14821 for the normal model, suggesting that the Weibull model may be preferable to the normal model. 
@@ -280,3 +281,19 @@ Finally, the second question of this project may be answered by looking at the m
 As briefly mentioned earlier, one caveat is that the Weibull model we fitted has quite a number of outliers. Furthermore, a limitation of the model is that the shape parameter $v$ follows a normal distribution with fixed parameters. It might be reasonable to allow the parameters of the distribution of $v$ to have distributions themselves, thus reflecting the variability of the mean values of $v$ for the different continents. Another possible improvement is to consider fitting a mixed model, for example a mixture of two Weibull distributions, which might reduce the residual errors.       
 
 ## References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Fink97" class="csl-entry">
+Fink, Daniel. 1997. <span>“A Compendium of Conjugate Priors.”</span> <a href="https://www.johndcook.com/CompendiumOfConjugatePriors.pdf">https://www.johndcook.com/CompendiumOfConjugatePriors.pdf</a>.
+</div>
+<div id="ref-Liu10" class="csl-entry">
+Liu, Chao, Ryen W. White, and Susan Dumais. 2010. <span>“Understanding
+Web Browsing Behaviors Through Weibull Analysis of Dwell Time.”</span>
+In <em>Proceedings of the 33rd International ACM SIGIR Conference on
+Research and Development in Information Retrieval</em>, 379–86. SIGIR
+’10. New York, NY, USA: Association for Computing Machinery.
+</div>
+<div id="ref-Google_analytics_avg_session_duration" class="csl-entry">
+<span>“Session Duration, Avg - Analytics Help.”</span> 2023. <a href="https://support.google.com/analytics/answer/1006253" class="uri">https://support.google.com/analytics/answer/1006253</a>.
+</div>
+</div>
